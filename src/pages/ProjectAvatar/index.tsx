@@ -5,7 +5,8 @@ import {
   AvatarSort,
   ProjectRightNav,
   AvatarBg,
-  ProjectNav
+  ProjectNav,
+  ProjectAvatarModal
 } from 'components'
 import * as S from './style'
 
@@ -15,13 +16,14 @@ export const ProjectAvatar = () => {
       <TheHeader />
       <S.Container>
         <S.LeftContainer>
-          <ProjectNav />
+          <ProjectNav renderType='ProjectAvatar' />
           <AvatarSelector />
           <AvatarSort />
           <AvatarBg />
         </S.LeftContainer>
         <ProjectRightNav renderType='ProjectAvatar' />
       </S.Container>
+      <ProjectAvatarModal />
     </>
   )
 }

@@ -4,6 +4,7 @@ const palette = {
   white: '#FFFFFF',
   txt: '#0E1937',
   txt50: '#0E1937',
+  boxShadow: '#e7eaf4',
   clickBackground: '',
   progressBarGradient: '',
   GNABG: '#FBFCFF',
@@ -49,7 +50,6 @@ const palette = {
   gray90: '#2A2A32',
   gray100: '#12121B'
 }
-
 // 레이아웃 관련
 const common = {
   flexCenter: `
