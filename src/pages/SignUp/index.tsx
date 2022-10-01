@@ -63,7 +63,7 @@ export const SignUp = () => {
             />
             {/* 이메일 에러메세지 */}
             {formik.touched.email && formik.errors.email ? (
-              <div>{formik.errors.email}</div>
+              <S.ErrorSpan>{formik.errors.email}</S.ErrorSpan>
             ) : null}
             <S.IdCheckBtn>중복 확인</S.IdCheckBtn>
           </S.EmailWrapper>
@@ -77,9 +77,9 @@ export const SignUp = () => {
             />
             {/* 비밀번호 에러메세지 */}
             {formik.touched.password && formik.errors.password ? (
-              <div>
+              <S.ErrorSpan>
                 {formik.errors.password} <PwErrorIcon width='18' height='18' />
-              </div>
+              </S.ErrorSpan>
             ) : // <PwCheckIcon width='18' height='18' />
             null}
           </S.PwWrapper>
@@ -93,10 +93,10 @@ export const SignUp = () => {
             />
             {/* 비밀번호확인 에러메세지 */}
             {formik.touched.confirmPassword && formik.errors.confirmPassword ? (
-              <div>
+              <S.ErrorSpan>
                 {formik.errors.confirmPassword}
                 <PwErrorIcon width='18' height='18' />
-              </div>
+              </S.ErrorSpan>
             ) : // <PwCheckIcon width='18' height='18' />
             null}
           </S.PwWrapper>

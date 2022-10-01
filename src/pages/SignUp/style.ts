@@ -92,3 +92,6 @@ export const SignUpBtn = styled.button`
   margin-top: 1rem;
   color: ${({ theme }) => theme.palette.white};
 `
+export const ErrorSpan = styled.span`
+  color: ${({ theme }) => theme.palette.orange2};
+`
