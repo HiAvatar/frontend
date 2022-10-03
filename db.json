@@ -549,5 +549,16 @@
       }
     }
   ],
-  "user": []
+  "users": [
+    {
+      "email": "123@123.com",
+      "password": "$2a$10$31TCek0RhgVsbhjQU6sD/.Nvdie6VhetfSLEpQ/3mPoPkfohR5Iii",
+      "id": 1
+    },
+    {
+      "email": "12@12.com",
+      "password": "$2a$10$oxJYEmnBBLTyXrWaTcghvO6aKpwiVP/MJ/1.INgeDm2LqbQfUpOoS",
+      "id": 2
+    }
+  ]
 }
