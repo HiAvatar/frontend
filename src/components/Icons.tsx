@@ -546,9 +546,9 @@ export const PwErrorIcon = ({
     <path
       d='M24 16V24'
       stroke='white'
-      stroke-width='2.5'
-      stroke-linecap='round'
-      stroke-linejoin='round'
+      strokeWidth='2.5'
+      strokeLinecap='round'
+      strokeLinejoin='round'
     />
     <path
       d='M24 32H24.02'
