@@ -4,8 +4,6 @@
 
 export interface NextButtonProps {
   requestFunc: any // 추후 수정
-  to: string
-  isComplete?: boolean
 }
 
 export interface VoiceControllerProps {
@@ -38,9 +36,9 @@ export interface RadioButtonProps {
   value: string
   content: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  renderType?: string
+  IconRenderType?: string
   defaultChecked?: boolean
-  renderType: string
-  IconRenderType: string
 }
 
 export interface HistoryPlayerProps {
@@ -118,6 +116,28 @@ export interface StyledComponentsProps {
   isSelected?: boolean
   isShowModal?: boolean
   theme: any
+}
+
+export interface Projects {
+  data: HistoryData[]
+  code: number
+  status: string
+}
+export interface HistoryData {
+  projects: ProjectsHistory[]
+  videos: VideosHistory[]
+}
+export interface ProjectsHistory {
+  projectId: number
+  projectName: string
+  lastModifiedAt: string
+}
+export interface VideosHistory {
+  videoId: number
+  videoName: string
+  thumbnail: string
+  videoUrl: string
+  createdAt: string
 }
 
 // 현재
