@@ -3,7 +3,7 @@ import { useAppDispatch } from 'store'
 import { Modalprops } from 'index'
 import { changeOption } from 'store/slices/optionSlice'
 import * as S from './style'
-import { ModalCloseIcon } from 'components/Icons'
+import { ModalCloseIcon, TooltipIcon } from 'components/Icons'
 
 export const ProjectTextModal = ({
   setModal,
@@ -27,14 +27,18 @@ export const ProjectTextModal = ({
   const onCloseHandler = () => {
     setModal(false)
   }
+  const isEmpty = textRef.current?.value.length === 0
 
   return (
     <S.Background>
       <S.Modal>
         <S.Top>
-          <label>텍스트를 입력해주세요</label>
+          <S.Label>
+            <TooltipIcon width='1.6rem' height='1.6rem' />
+            <label>텍스트를 입력해주세요</label>
+          </S.Label>
           <S.CloseBtn onClick={onCloseHandler}>
-            <ModalCloseIcon width='32' height='32' />
+            <ModalCloseIcon width='3.2rem' height='3.2rem' />
           </S.CloseBtn>
         </S.Top>
 
@@ -47,7 +51,9 @@ export const ProjectTextModal = ({
         />
         <S.Bottom>
           <S.CancelBtn onClick={onCloseHandler}>취소</S.CancelBtn>
-          <S.EnterBtn onClick={onCompleteHandler}>텍스트 입력</S.EnterBtn>
+          <S.EnterBtn disabled={isEmpty} onClick={onCompleteHandler}>
+            확인
+          </S.EnterBtn>
         </S.Bottom>
       </S.Modal>
     </S.Background>

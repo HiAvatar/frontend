@@ -6,27 +6,48 @@ import {
   removeText,
   changeText,
   selectedText,
-  changeChnsnSpcng
+  changeChnsnSpcng,
+  textCreatePreview
 } from 'store/slices/optionSlice'
-import { useAppSelector } from 'store'
+import { usePostTextMutation } from 'api/optionApi'
 
-export const TextPlayer = ({ itemData, splitTextList, findData, dispatch }) => {
-  const [songs, setSongs] = useState('/src/assets/test.mp3')
-  const [isplaying, setisplaying] = useState(false)
-  const [currentSong, setCurrentSong] = useState('/src/assets/test.mp3')
+export const TextPlayer = ({
+  itemData,
+  splitTextList,
+  findData,
+  textPreviewData,
+  dispatch
+}) => {
+  const [isPlaying, setIsPlaying] = useState(false)
 
   const audioElem = useRef()
+  const [audioFile, setAudioFile] = useState()
   const [spacingValue, setSpacingValue] = useState(0)
+  const [postText] = usePostTextMutation()
 
   // console.log(audioElem)
 
   useEffect(() => {
-    if (isplaying) {
-      audioElem.current.play()
-    } else {
-      audioElem.current.pause()
+    // console.log(Boolean(audioFile))
+    if (Boolean(audioFile)) {
+      if (isPlaying) {
+        audioElem.current.play()
+      } else {
+        audioElem.current.pause()
+      }
     }
-  }, [isplaying])
+  }, [isPlaying, audioFile])
+
+  useEffect(() => {
+    postText(textPreviewData)
+      .unwrap()
+      .then((data) => {
+        setAudioFile(data.data.audioFile)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }, [textPreviewData.text, audioFile])
 
   // const userInputHandler = (e) => {
   //   const { name, value } = e.target
@@ -55,13 +76,21 @@ export const TextPlayer = ({ itemData, splitTextList, findData, dispatch }) => {
     e.stopPropagation()
     dispatch(selectedText({ itemData, splitTextList }))
   }
+  // console.log(audioFile)
+  const playPause = () => {
+    const textData = { text: itemData.text }
+    dispatch(textCreatePreview(textData))
+    // console.log(audioFile)
 
-  const playPause = () => setisplaying(!isplaying)
+    setIsPlaying(!isPlaying)
+  }
+
+  const audioFileUrl = `data:audio/wav;base64,${audioFile}`
 
   const stop = () => {
     audioElem.current.pause()
     audioElem.current.currentTime = 0
-    setisplaying(false)
+    setIsPlaying(false)
   }
 
   const chnsnSpcng = (e) => {
@@ -76,7 +105,30 @@ export const TextPlayer = ({ itemData, splitTextList, findData, dispatch }) => {
     <S.Wrapper onClick={userSelectedHandler}>
       <S.PlayerBar focus={findData?.focus}>
         <li>
-          <S.ItemNum>{itemData.sentenceId}</S.ItemNum>
+          <div>
+            <audio src={audioFileUrl} ref={audioElem} />
+            <div onClick={playPause}>
+              {isPlaying ? (
+                <PauseIcon
+                  width='32'
+                  height='32'
+                  isSelected={findData?.focus}
+                />
+              ) : (
+                <PlayIcon width='32' height='32' />
+              )}
+            </div>
+            <div onClick={stop}>
+              <StopIcon width='32' height='32' />
+            </div>
+          </div>
+        </li>
+        <li>
+          <S.ItemNum>
+            {itemData.sentenceId < 10
+              ? '0' + itemData.sentenceId
+              : itemData.sentenceId}
+          </S.ItemNum>
           <S.TextEdit
             name='text'
             onChange={userInputHandler}
@@ -90,43 +142,30 @@ export const TextPlayer = ({ itemData, splitTextList, findData, dispatch }) => {
         </li>
         <li>
           <div>
-            <audio src={currentSong} ref={audioElem} />
-            <div onClick={playPause}>
-              {isplaying ? (
-                <PauseIcon
-                  width='32'
-                  height='32'
-                  isSelected={findData?.focus}
-                />
-              ) : (
-                <PlayIcon width='32' height='32' isSelected={findData?.focus} />
-              )}
-            </div>
-            <div onClick={stop}>
-              <StopIcon width='32' height='32' isSelected={findData?.focus} />
-            </div>
-          </div>
-          <div>
             <S.CloseButton onClick={userRemoveHandler}>
-              <CloseIcon width='24' height='24' />
+              <CloseIcon width='24' height='24' isSelected={findData?.focus} />
             </S.CloseButton>
           </div>
         </li>
       </S.PlayerBar>
       <S.SetUpBtnList focus={findData?.focus}>
         <li>
-          <S.TextEditBtn onClick={userEditHandler}>+ 문장 추가</S.TextEditBtn>
+          <S.TextEditBtn onClick={userEditHandler}>문장 추가</S.TextEditBtn>
         </li>
         <li>
-          <span>{spacingValue / 10}초</span>
-          <S.SntncSpcng
-            type='range'
-            min='0'
-            max='30'
-            value={spacingValue}
-            step='1'
-            onChange={chnsnSpcng}
-          />
+          <S.SntncSpcngBtn>
+            <span>간격조절</span>
+            <span className='visibility'>{spacingValue / 10}초</span>
+            <S.SntncSpcng
+              className='visibility'
+              type='range'
+              min='0'
+              max='30'
+              value={spacingValue}
+              step='1'
+              onChange={chnsnSpcng}
+            />
+          </S.SntncSpcngBtn>
         </li>
       </S.SetUpBtnList>
     </S.Wrapper>
