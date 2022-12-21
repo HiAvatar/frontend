@@ -20,6 +20,24 @@ interface Props {
   userSelectedList: UserSelected[]
 }
 
+const RenderList = ({ splitTextList, userSelectedList }: Props) => {
+  return (
+    <>
+      {splitTextList.map((item) => {
+        let orginData = item
+        const findData = userSelectedList.find((item) => {
+          return orginData.sentenceId === item.sentenceId
+        })
+        return (
+          <div key={item.sentenceId}>
+            <S.TextBox findData={findData?.focus}>{item.text}</S.TextBox>
+          </div>
+        )
+      })}
+    </>
+  )
+}
+
 export const ProjectText = () => {
   const { splitTextList, userSelectedList } = useAppSelector(
     (state) => state.option
@@ -48,23 +66,5 @@ export const ProjectText = () => {
         />
       </S.TextGroup>
     </S.Wrapper>
-  )
-}
-
-function RenderList({ splitTextList, userSelectedList }: Props) {
-  return (
-    <>
-      {splitTextList.map((item) => {
-        let orginData = item
-        const findData = userSelectedList.find((item) => {
-          return orginData.sentenceId === item.sentenceId
-        })
-        return (
-          <div key={item.sentenceId}>
-            <S.TextBox findData={findData?.focus}>{item.text}</S.TextBox>
-          </div>
-        )
-      })}
-    </>
   )
 }

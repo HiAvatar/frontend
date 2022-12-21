@@ -14,23 +14,36 @@ import { textsCreatePreview } from 'store/slices/optionSlice'
 import { TootipMessage } from 'components/common/TootipMessage'
 import * as S from './style'
 
+interface Time {
+  audioDurationTime: number
+}
+
+const RenderTime = (time: Time) => {
+  let seconds = Object.values(time)
+
+  // let min = parseInt((seconds[0] % 3600) / 60)
+  let min = Math.floor((seconds[0] % 3600) / 60)
+  let sec = seconds[0] % 60
+  return (
+    <S.RenderTime>{`${min > 9 ? '' : '0'}${min}:${
+      sec > 9 ? '' : '0'
+    }${sec}`}</S.RenderTime>
+  )
+}
+
 export const VoicePreviewPlayer = () => {
   const audioElem: React.RefObject<HTMLAudioElement> = useRef(null)
   const ProjectTextEditOption = useAppSelector((state) => state.option)
   const dispatch = useAppDispatch()
   const [isPlaying, setIsPlaying] = useState(false)
+  const [isDownLoad, setIsDownLoad] = useState(false)
   const [audioDurationTime, setAudioDurationTime] = useState(0)
   const [audioCurrentTime, setAudioCurrentTime] = useState(0)
-  const [textsPreviewUrl, setTextsPreviewUrl] = useState()
-  // const textsPreviewUrl = useRef()
+  const [textsPreviewUrl, setTextsPreviewUrl] = useState('')
   const [postOptions] = usePostOptionsMutation()
   const { projectId } = useParams()
 
   const changeFlag = useRef(false)
-
-  interface Time {
-    audioDurationTime: number
-  }
 
   useEffect(() => {
     const projectData = ProjectTextEditOption.textsPreviewData
@@ -40,13 +53,23 @@ export const VoicePreviewPlayer = () => {
         .unwrap()
         .then((data) => {
           setTextsPreviewUrl(data.data.totalAudioUrl)
+          isDownLoad &&
+            fetch(data.data.totalAudioUrl).then((response) => {
+              response.blob().then((blob) => {
+                const url = window.URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `VoicePreview.mp4`
+                a.click()
+              })
+            })
         })
         .catch((error) => {
           alert(error)
         })
     }
     changeFlag.current = true
-  }, [ProjectTextEditOption.textsPreviewData.texts])
+  }, [ProjectTextEditOption.textsPreviewData.texts, isDownLoad])
 
   useEffect(() => {
     if (isPlaying) {
@@ -100,7 +123,11 @@ export const VoicePreviewPlayer = () => {
   const onPlaying = () => {
     const duration = String(audioElem.current?.duration)
     const currentTime = String(audioElem.current?.currentTime)
-    setAudioDurationTime(parseInt(duration))
+    if (duration !== 'NaN') {
+      setAudioDurationTime(parseInt(duration))
+    } else {
+      setAudioDurationTime(0)
+    }
     setAudioCurrentTime(parseInt(currentTime))
   }
 
@@ -109,17 +136,21 @@ export const VoicePreviewPlayer = () => {
     audioElem.current!.currentTime = currentTime
   }
 
-  const RenderTime = (time: Time) => {
-    let seconds = Object.values(time)
-
-    // let min = parseInt((seconds[0] % 3600) / 60)
-    let min = Math.floor((seconds[0] % 3600) / 60)
-    let sec = seconds[0] % 60
-    return (
-      <S.RenderTime>{`${min > 9 ? '' : '0'}${min}:${
-        sec > 9 ? '' : '0'
-      }${sec}`}</S.RenderTime>
-    )
+  const userDownLoadHandeler = () => {
+    const {
+      userSelectedList,
+      textPreviewData,
+      textsPreviewData,
+      audioFile,
+      dummyData,
+      totalAudioUrl,
+      ...textData
+    } = ProjectTextEditOption
+    dispatch(textsCreatePreview(textData))
+    setIsDownLoad(true)
+    setTimeout(() => {
+      setIsDownLoad(false)
+    }, 50)
   }
 
   return (
@@ -137,9 +168,9 @@ export const VoicePreviewPlayer = () => {
           </S.Tooltip>
           <span className='title'>합친 음성을 미리 들을 수 있어요</span>
         </div>
-        <a className='download' href='#' download={textsPreviewUrl}>
+        <button className='download' onClick={userDownLoadHandeler}>
           전체 음성 다운로드
-        </a>
+        </button>
       </S.TitleGroup>
       <audio src={textsPreviewUrl} ref={audioElem} onTimeUpdate={onPlaying} />
       <S.AudioPlayer>

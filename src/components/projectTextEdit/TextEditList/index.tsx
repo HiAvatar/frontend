@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import * as S from './style'
 import { TextPlayer } from '../TextPlayer'
 import { useAppDispatch, useAppSelector } from 'store'
@@ -12,11 +12,6 @@ import {
   ProjectTextModal
 } from 'components'
 import { TooltipIcon } from 'components/Icons'
-import { usePostTextMutation } from 'api/optionApi'
-
-interface ChangeFlag {
-  current: boolean
-}
 
 interface SplitTextList {
   sentenceId: number
@@ -32,6 +27,29 @@ interface UserSelectedList {
 interface Props {
   splitTextList: SplitTextList[]
   userSelectedList: UserSelectedList[]
+}
+
+const RenderList = ({ splitTextList, userSelectedList }: Props) => {
+  return (
+    <>
+      {splitTextList.length &&
+        splitTextList.map((item) => {
+          let orginData = item
+
+          const findData = userSelectedList.find((item) => {
+            return orginData.sentenceId === item.sentenceId
+          })
+          return (
+            <TextPlayer
+              key={item.sentenceId}
+              itemData={item}
+              splitTextList={splitTextList}
+              findData={findData}
+            />
+          )
+        })}
+    </>
+  )
 }
 
 export const TextEditList = () => {
@@ -105,28 +123,5 @@ export const TextEditList = () => {
         )}
       </>
     </S.Wrapper>
-  )
-}
-
-function RenderList({ splitTextList, userSelectedList }: Props) {
-  return (
-    <>
-      {splitTextList.length &&
-        splitTextList.map((item) => {
-          let orginData = item
-
-          const findData = userSelectedList.find((item) => {
-            return orginData.sentenceId === item.sentenceId
-          })
-          return (
-            <TextPlayer
-              key={item.sentenceId}
-              itemData={item}
-              splitTextList={splitTextList}
-              findData={findData}
-            />
-          )
-        })}
-    </>
   )
 }
