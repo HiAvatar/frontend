@@ -40,12 +40,10 @@ export const VoicePreviewPlayer = () => {
   const [audioDurationTime, setAudioDurationTime] = useState(0)
   const [audioCurrentTime, setAudioCurrentTime] = useState(0)
   const [textsPreviewUrl, setTextsPreviewUrl] = useState('')
-  // const textsPreviewUrl = useRef()
   const [postOptions] = usePostOptionsMutation()
   const { projectId } = useParams()
 
   const changeFlag = useRef(false)
-  const downLoadData = useRef('')
 
   useEffect(() => {
     const projectData = ProjectTextEditOption.textsPreviewData
@@ -55,14 +53,13 @@ export const VoicePreviewPlayer = () => {
         .unwrap()
         .then((data) => {
           setTextsPreviewUrl(data.data.totalAudioUrl)
-          console.log(data.data.totalAudioUrl)
           isDownLoad &&
             fetch(data.data.totalAudioUrl).then((response) => {
               response.blob().then((blob) => {
                 const url = window.URL.createObjectURL(blob)
                 const a = document.createElement('a')
                 a.href = url
-                a.download = `VoicePreview.mp4` // 연습용 이름.mp4
+                a.download = `VoicePreview.mp4`
                 a.click()
               })
             })
