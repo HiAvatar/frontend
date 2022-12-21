@@ -45,6 +45,7 @@ export const VoicePreviewPlayer = () => {
   const { projectId } = useParams()
 
   const changeFlag = useRef(false)
+  const downLoadData = useRef('')
 
   useEffect(() => {
     const projectData = ProjectTextEditOption.textsPreviewData
@@ -54,13 +55,24 @@ export const VoicePreviewPlayer = () => {
         .unwrap()
         .then((data) => {
           setTextsPreviewUrl(data.data.totalAudioUrl)
+          console.log(data.data.totalAudioUrl)
+          isDownLoad &&
+            fetch(data.data.totalAudioUrl).then((response) => {
+              response.blob().then((blob) => {
+                const url = window.URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `VoicePreview.mp4` // 연습용 이름.mp4
+                a.click()
+              })
+            })
         })
         .catch((error) => {
           alert(error)
         })
     }
     changeFlag.current = true
-  }, [ProjectTextEditOption.textsPreviewData.texts])
+  }, [ProjectTextEditOption.textsPreviewData.texts, isDownLoad])
 
   useEffect(() => {
     if (isPlaying) {
@@ -73,18 +85,7 @@ export const VoicePreviewPlayer = () => {
       audioElem.current!.currentTime = 0
       setIsPlaying(false)
     }
-    isDownLoad &&
-      fetch(textsPreviewUrl).then((response) => {
-        response.blob().then((blob) => {
-          const url = window.URL.createObjectURL(blob)
-          const a = document.createElement('a')
-          a.href = url
-          a.download = `VoicePreview.mp4` // 연습용 이름.mp4
-          a.click()
-        })
-      })
-    console.log(isDownLoad)
-  }, [textsPreviewUrl, isDownLoad])
+  }, [textsPreviewUrl])
 
   useEffect(() => {
     if (!changeFlag.current) {
@@ -138,7 +139,7 @@ export const VoicePreviewPlayer = () => {
     audioElem.current!.currentTime = currentTime
   }
 
-  const test = async () => {
+  const userDownLoadHandeler = () => {
     const {
       userSelectedList,
       textPreviewData,
@@ -170,7 +171,7 @@ export const VoicePreviewPlayer = () => {
           </S.Tooltip>
           <span className='title'>합친 음성을 미리 들을 수 있어요</span>
         </div>
-        <button className='download' onClick={test}>
+        <button className='download' onClick={userDownLoadHandeler}>
           전체 음성 다운로드
         </button>
       </S.TitleGroup>
